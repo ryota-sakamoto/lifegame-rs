@@ -1,0 +1,7 @@
+[package]
+name = "lifegame-rs"
+version = "0.1.0"
+authors = ["ryota-sakamoto <sakamo.ryota+github@gmail.com>"]
+
+[dependencies]
+ncurses = "5.94.0"
