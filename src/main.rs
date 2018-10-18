@@ -27,7 +27,7 @@ fn main() {
     keypad(stdscr(), true);
     noecho();
 
-    loop {
+    while !game.is_end() {
         game.next();
 
         for v in game.output_new() {
@@ -41,6 +41,8 @@ fn main() {
         clear();
         refresh();
     }
+
+    endwin();
 }
 
 struct LifeGame {
@@ -51,7 +53,7 @@ struct LifeGame {
 impl LifeGame {
     fn new(now: Vec<Vec<bool>>) -> Self {
         Self {
-            now_map: now.clone(),
+            now_map: Vec::new(),
             new_map: now,
         }
     }
@@ -68,11 +70,14 @@ impl LifeGame {
     fn output_new(&mut self) -> Vec<Vec<bool>> {
         self.new_map.clone()
     }
+
+    fn is_end(&mut self) -> bool {
+        self.now_map == self.new_map
+    }
 }
 
 trait Live {
     fn is_live(&self, h: usize, w: usize) -> bool;
-    fn is_end(&self) -> bool;
 }
 
 impl Live for Vec<Vec<bool>> {
@@ -100,9 +105,5 @@ impl Live for Vec<Vec<bool>> {
         } else {
             live_count == 3
         }
-    }
-    
-    fn is_end(&self) -> bool {
-        false
     }
 }
