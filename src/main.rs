@@ -107,3 +107,43 @@ impl Live for Vec<Vec<bool>> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /**
+     * init(vec![
+     * ".#.#",
+     * "#.#.",
+     * ".#.#",
+     * "#.#.",
+     * ])
+     */
+    fn init(m: Vec<&str>) -> LifeGame {
+        let v = m.iter().map(|b| b.chars().map(|c| match c {
+            '.' => false,
+            '#' => true,
+            _ => panic!("Invalid"),
+        }).collect()).collect();
+        LifeGame::new(v)
+    }
+
+    #[test]
+    fn is_live_test3() {
+        let mut game = init(vec![
+            ".#.",
+            ".#.",
+            ".#.",
+        ]);
+        assert!(!game.is_end());
+        game.next();
+
+        let n = game.output_new();
+        assert_eq!(n, vec![
+            vec![false, false, false],
+            vec![true, true, true],
+            vec![false, false, false],
+        ]);
+    }
+}
