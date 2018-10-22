@@ -29,13 +29,7 @@ fn main() {
 
     while !game.is_end() {
         game.next();
-
-        for v in game.output_new() {
-            printw(&format!("{}\n", v.iter().map(|t| match t {
-                true => "#",
-                false => ".",
-            }).collect::<Vec<&str>>().concat()));
-        }
+        printw(&game.output_new_str());
         refresh();
         getch();
         clear();
@@ -69,6 +63,18 @@ impl LifeGame {
 
     fn output_new(&mut self) -> Vec<Vec<bool>> {
         self.new_map.clone()
+    }
+
+    fn output_new_str(&mut self) -> String {
+        let m = self.new_map.clone();
+        let mut result = String::new();
+        for v in m {
+            result += &format!("{}\n", v.iter().map(|t| match t {
+                true => "#",
+                false => ".",
+            }).collect::<Vec<&str>>().concat());
+        }
+        result
     }
 
     fn is_end(&mut self) -> bool {
@@ -139,11 +145,7 @@ mod tests {
         assert!(!game.is_end());
         game.next();
 
-        let n = game.output_new();
-        assert_eq!(n, vec![
-            vec![false, false, false],
-            vec![true, true, true],
-            vec![false, false, false],
-        ]);
+        let n = game.output_new_str();
+        assert_eq!(n, "...\n###\n...\n");
     }
 }
