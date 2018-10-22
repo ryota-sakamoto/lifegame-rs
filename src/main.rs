@@ -99,6 +99,9 @@ impl Live for Vec<Vec<bool>> {
                 if nn < 0 {
                     continue;
                 }
+                if mm as usize == h && nn as usize == w {
+                    continue;
+                }
                 if let Some(b) = self.get(mm as usize).and_then(|a|a.get(nn as usize)) {
                     if *b {
                         live_count += 1;
