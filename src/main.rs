@@ -1,9 +1,38 @@
 extern crate ncurses;
+extern crate clap;
 
 use std::io::stdin;
 use ncurses::*;
+use clap::{
+    App,
+    Arg,
+};
 
 fn main() {
+    let app = App::new("lifegame")
+        .arg(
+            Arg::with_name("random")
+                .long("random")
+                .help("Set random map flag")
+        ).arg(
+            Arg::with_name("height")
+                .long("height")
+                .help("Set height")
+                .takes_value(true)
+        ).arg(
+            Arg::with_name("width")
+                .long("width")
+                .help("Set width")
+                .takes_value(true)
+        ).arg(
+            Arg::with_name("auto_time")
+                .short("n")
+                .help("Set auto display time")
+                .takes_value(true)
+        );
+
+    let matches = app.get_matches();
+    
     let mut hw = String::new();
     stdin().read_line(&mut hw).unwrap();
     let hw: Vec<usize> = hw.trim().split(" ").map(|t|t.parse().unwrap()).collect();

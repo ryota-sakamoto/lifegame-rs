@@ -5,3 +5,4 @@ authors = ["ryota-sakamoto <sakamo.ryota+github@gmail.com>"]
 
 [dependencies]
 ncurses = "5.94.0"
+clap = "2.32.0"
