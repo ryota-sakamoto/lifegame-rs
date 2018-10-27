@@ -1,8 +1,13 @@
 extern crate clap;
 extern crate ncurses;
+extern crate rand;
 
 use clap::{App, Arg};
 use ncurses::*;
+use rand::{
+    Rng,
+    thread_rng,
+};
 use std::io::stdin;
 
 fn main() {
@@ -40,23 +45,24 @@ fn main() {
     let hw: Vec<usize> = vec![h, w];
 
     let mut map = Vec::new();
-    if matches.is_present("random") {
-
-    } else {
-        for _ in 0..hw[0] {
+    for _ in 0..hw[0] {
+        let l = if matches.is_present("random") {
+            generate_random_line(hw[1])
+        } else {
             let mut l = String::new();
             stdin().read_line(&mut l).unwrap();
-            let line: Vec<bool> = l.trim()
-                .chars()
-                .map(|c| match c {
-                    '.' => false,
-                    '#' => true,
-                    _ => panic!("Invalid"),
-                })
-                .collect();
-            assert_eq!(line.len(), hw[1]);
-            map.push(line);
-        }
+            l
+        };
+        let line: Vec<bool> = l.trim()
+            .chars()
+            .map(|c| match c {
+                '.' => false,
+                '#' => true,
+                _ => panic!("Invalid"),
+            })
+            .collect();
+        assert_eq!(line.len(), hw[1]);
+        map.push(line);
     }
 
     let mut game = LifeGame::new(map);
@@ -75,6 +81,19 @@ fn main() {
     }
 
     endwin();
+}
+
+fn generate_random_line(len: usize) -> String {
+    let mut s = String::new();
+    let mut rng = thread_rng();
+    for _ in 0..len {
+        s += if rng.gen() {
+            "#"
+        } else {
+            "."
+        };
+    }
+    s
 }
 
 struct LifeGame {
