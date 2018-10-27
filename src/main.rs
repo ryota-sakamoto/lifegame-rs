@@ -8,7 +8,11 @@ use rand::{
     Rng,
     thread_rng,
 };
-use std::io::stdin;
+use std::{
+    io::stdin,
+    thread,
+    time::Duration,
+};
 
 fn main() {
     let app = App::new("lifegame")
@@ -35,12 +39,14 @@ fn main() {
             Arg::with_name("auto_time")
                 .short("n")
                 .help("Set auto display time")
-                .takes_value(true),
+                .takes_value(true)
+                .default_value("0.0"),
         );
 
     let matches = app.get_matches();
     let h = matches.value_of("height").unwrap().parse().unwrap();
     let w = matches.value_of("width").unwrap().parse().unwrap();
+    let auto_time: f64 = matches.value_of("auto_time").unwrap().parse().unwrap();
 
     let hw: Vec<usize> = vec![h, w];
 
@@ -75,7 +81,11 @@ fn main() {
         game.next();
         printw(&game.output_new_str());
         refresh();
-        getch();
+        if auto_time == 0.0 {
+            getch();
+        } else {
+            thread::sleep(Duration::from_millis((1000.0 * auto_time) as u64));
+        }
         clear();
         refresh();
     }
