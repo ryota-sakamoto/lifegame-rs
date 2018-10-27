@@ -1,53 +1,62 @@
-extern crate ncurses;
 extern crate clap;
+extern crate ncurses;
 
-use std::io::stdin;
+use clap::{App, Arg};
 use ncurses::*;
-use clap::{
-    App,
-    Arg,
-};
+use std::io::stdin;
 
 fn main() {
     let app = App::new("lifegame")
         .arg(
             Arg::with_name("random")
                 .long("random")
-                .help("Set random map flag")
-        ).arg(
+                .help("Set random map flag"),
+        )
+        .arg(
             Arg::with_name("height")
                 .long("height")
                 .help("Set height")
                 .takes_value(true)
-        ).arg(
+                .default_value("10"),
+        )
+        .arg(
             Arg::with_name("width")
                 .long("width")
                 .help("Set width")
                 .takes_value(true)
-        ).arg(
+                .default_value("10"),
+        )
+        .arg(
             Arg::with_name("auto_time")
                 .short("n")
                 .help("Set auto display time")
-                .takes_value(true)
+                .takes_value(true),
         );
 
     let matches = app.get_matches();
-    
-    let mut hw = String::new();
-    stdin().read_line(&mut hw).unwrap();
-    let hw: Vec<usize> = hw.trim().split(" ").map(|t|t.parse().unwrap()).collect();
-    
+    let h = matches.value_of("height").unwrap().parse().unwrap();
+    let w = matches.value_of("width").unwrap().parse().unwrap();
+
+    let hw: Vec<usize> = vec![h, w];
+
     let mut map = Vec::new();
-    for _ in 0..hw[0] {
-        let mut l = String::new();
-        stdin().read_line(&mut l).unwrap();
-        let line: Vec<bool> = l.trim().chars().map(|c| match c {
-            '.' => false,
-            '#' => true,
-            _ => panic!("Invalid"),
-        }).collect();
-        assert_eq!(line.len(), hw[1]);
-        map.push(line);
+    if matches.is_present("random") {
+
+    } else {
+        for _ in 0..hw[0] {
+            let mut l = String::new();
+            stdin().read_line(&mut l).unwrap();
+            let line: Vec<bool> = l.trim()
+                .chars()
+                .map(|c| match c {
+                    '.' => false,
+                    '#' => true,
+                    _ => panic!("Invalid"),
+                })
+                .collect();
+            assert_eq!(line.len(), hw[1]);
+            map.push(line);
+        }
     }
 
     let mut game = LifeGame::new(map);
@@ -98,10 +107,16 @@ impl LifeGame {
         let m = self.new_map.clone();
         let mut result = String::new();
         for v in m {
-            result += &format!("{}\n", v.iter().map(|t| match t {
-                true => "#",
-                false => ".",
-            }).collect::<Vec<&str>>().concat());
+            result += &format!(
+                "{}\n",
+                v.iter()
+                    .map(|t| match t {
+                        true => "#",
+                        false => ".",
+                    })
+                    .collect::<Vec<&str>>()
+                    .concat()
+            );
         }
         result
     }
@@ -131,7 +146,7 @@ impl Live for Vec<Vec<bool>> {
                 if mm as usize == h && nn as usize == w {
                     continue;
                 }
-                if let Some(b) = self.get(mm as usize).and_then(|a|a.get(nn as usize)) {
+                if let Some(b) = self.get(mm as usize).and_then(|a| a.get(nn as usize)) {
                     if *b {
                         live_count += 1;
                     }
@@ -159,21 +174,23 @@ mod tests {
      * ])
      */
     fn init(m: Vec<&str>) -> LifeGame {
-        let v = m.iter().map(|b| b.chars().map(|c| match c {
-            '.' => false,
-            '#' => true,
-            _ => panic!("Invalid"),
-        }).collect()).collect();
+        let v = m.iter()
+            .map(|b| {
+                b.chars()
+                    .map(|c| match c {
+                        '.' => false,
+                        '#' => true,
+                        _ => panic!("Invalid"),
+                    })
+                    .collect()
+            })
+            .collect();
         LifeGame::new(v)
     }
 
     #[test]
     fn is_live_test3() {
-        let mut game = init(vec![
-            ".#.",
-            ".#.",
-            ".#.",
-        ]);
+        let mut game = init(vec![".#.", ".#.", ".#."]);
         assert!(!game.is_end());
         game.next();
 
