@@ -226,4 +226,13 @@ mod tests {
         let n = game.output_new_str();
         assert_eq!(n, "...\n###\n...\n");
     }
+
+    #[test]
+    fn generate_random_line_test() {
+        let n3 = generate_random_line(3);
+        assert_eq!(3, n3.len());
+
+        let n5 = generate_random_line(5);
+        assert_eq!(5, n5.len());
+    }
 }
